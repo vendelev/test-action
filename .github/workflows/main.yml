@@ -36,9 +36,9 @@ jobs:
               uses: mirromutth/mysql-action@v1.1
               with:
                 # The port of host
-                #host port: # optional, default is 3306
+                host port: 3306 # optional, default is 3306
                 # The port of container
-                #container port: # optional, default is 3306
+                container port: 3306 # optional, default is 3306
                 # --character-set-server - The character set of MySQL server
                 #character set server: # optional, default is utf8mb4
                 # --collation-server - The character collation of MySQL server
@@ -54,8 +54,8 @@ jobs:
                 # MYSQL_PASSWORD - specified superuser password which user is power for created database
                 #mysql password: # optional, default is
 
-            - name: Shutdown Ubuntu MySQL (SUDO)
-              run: mysql -uroot -proot -e 'SHOW DATABASES'
+            - name: test mysql
+              run: mysql -h localhost -uroot -proot -e 'SHOW DATABASES'
 
 #            - name: Setup PHP
 #              uses: shivammathur/setup-php@v2
