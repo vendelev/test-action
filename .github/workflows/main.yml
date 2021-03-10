@@ -14,18 +14,48 @@ jobs:
     test:
         # The type of runner that the job will run on
         runs-on: ubuntu-latest
-        services:
-            mysql:
-                image: mysql:5.7
-                env:
-                    MYSQL_ALLOW_EMPTY_PASSWORD: false
-                    MYSQL_ROOT_PASSWORD: root
-                    MYSQL_DATABASE: test_myapp
-                ports:
-                    - 3306/tcp
-                options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+#        services:
+#            mysql:
+#                image: mysql:5.7
+#                env:
+#                    MYSQL_ALLOW_EMPTY_PASSWORD: false
+#                    MYSQL_ROOT_PASSWORD: root
+#                    MYSQL_DATABASE: test_myapp
+#                ports:
+#                    - 3306/tcp
+#                options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
         steps:
             - uses: actions/checkout@v2
+
+            - name: Shutdown Ubuntu MySQL (SUDO)
+              run: sudo service mysql stop
+
+            - name: Setup MySQL
+              # You may pin to the exact commit or the version.
+              # uses: mirromutth/mysql-action@de1fba8b3f90ce8db80f663a7043be3cf3231248
+              uses: mirromutth/mysql-action@v1.1
+              with:
+                # The port of host
+                host port: # optional, default is 3306
+                # The port of container
+                container port: # optional, default is 3306
+                # --character-set-server - The character set of MySQL server
+                character set server: # optional, default is utf8mb4
+                # --collation-server - The character collation of MySQL server
+                collation server: # optional, default is utf8mb4_general_ci
+                # Version of MySQL to use
+                mysql version: 5.7 # optional, default is latest
+                # MYSQL_ROOT_PASSWORD - root superuser password
+                mysql root password: root # optional, default is
+                # MYSQL_DATABASE - name for the default database that is created
+                mysql database: test # optional, default is
+                # MYSQL_USER - create the specified user with superuser power for created database
+                #mysql user: # optional, default is
+                # MYSQL_PASSWORD - specified superuser password which user is power for created database
+                #mysql password: # optional, default is
+
+            - name: Shutdown Ubuntu MySQL (SUDO)
+              run: mysql -uroot -proot -e 'SHOW DATABASES'
 
 #            - name: Setup PHP
 #              uses: shivammathur/setup-php@v2
@@ -33,11 +63,11 @@ jobs:
 #                  php-version: '7.4'
 #                  extensions: bcmath, iconv, ctype, gd, mbstring, mysqli, pdo, pdo_mysql, sockets, zip, soap, intl
 
-            - name: Start mysql service
-              run: |
-                sudo /etc/init.d/mysql start
-                mysql -V
-                mysql -uroot -proot -e 'SHOW DATABASES'
+#            - name: Start mysql service
+#              run: |
+#                sudo /etc/init.d/mysql start
+#                mysql -V
+#                mysql -uroot -proot -e 'SHOW DATABASES'
 
 #                mysql -uroot -proot -e 'CREATE DATABASE IF NOT EXISTS test_myapp'
 #            - name: Setup config
