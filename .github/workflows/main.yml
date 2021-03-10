@@ -55,7 +55,7 @@ jobs:
                 #mysql password: # optional, default is
 
             - name: test mysql
-              run: mysql -hlocalhost -uroot -proot -e 'SHOW DATABASES'
+              run: mysql -h127.0.0.1 -uroot -proot -e 'SHOW DATABASES'
 
 #            - name: Setup PHP
 #              uses: shivammathur/setup-php@v2
