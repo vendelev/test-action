@@ -30,59 +30,28 @@ jobs:
             - name: Shutdown Ubuntu MySQL (SUDO)
               run: sudo service mysql stop
 
-#            - name: Setup MySQL
-#              # You may pin to the exact commit or the version.
-#              # uses: mirromutth/mysql-action@de1fba8b3f90ce8db80f663a7043be3cf3231248
-#              uses: mirromutth/mysql-action@v1.1
-#              with:
-#                # The port of host
-#                host port: 3306 # optional, default is 3306
-#                # The port of container
-#                container port: 3306 # optional, default is 3306
-#                # --character-set-server - The character set of MySQL server
-#                #character set server: # optional, default is utf8mb4
-#                # --collation-server - The character collation of MySQL server
-#                #collation server: # optional, default is utf8mb4_general_ci
-#                # Version of MySQL to use
-#                mysql version: 5.7 # optional, default is latest
-#                # MYSQL_ROOT_PASSWORD - root superuser password
-#                mysql root password: root # optional, default is
-#                # MYSQL_DATABASE - name for the default database that is created
-#                mysql database: test # optional, default is
-#                # MYSQL_USER - create the specified user with superuser power for created database
-#                #mysql user: # optional, default is
-#                # MYSQL_PASSWORD - specified superuser password which user is power for created database
-#                #mysql password: # optional, default is
-
-            - name: test mysql
+            - name: Test mysql
               run: mysql -h127.0.0.1 -P${{ job.services.mysql.ports['3306'] }} -uroot -proot -e 'SHOW DATABASES'
 
-#            - name: Setup PHP
-#              uses: shivammathur/setup-php@v2
-#              with:
-#                  php-version: '7.4'
-#                  extensions: bcmath, iconv, ctype, gd, mbstring, mysqli, pdo, pdo_mysql, sockets, zip, soap, intl
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '7.4'
+                  extensions: bcmath, iconv, ctype, gd, mbstring, mysqli, pdo, pdo_mysql, sockets, zip, soap, intl
 
-#            - name: Start mysql service
-#              run: |
-#                sudo /etc/init.d/mysql start
-#                mysql -V
-#                mysql -uroot -proot -e 'SHOW DATABASES'
+            - name: Setup config
+              run: |
+                echo "<?php return ['Datasources' => ['test' => ['username' => 'root', 'password' => 'root', 'host' => '127.0.0.1', 'port' => '${{ job.services.mysql.ports['3306'] }}', 'database' => 'test_myapp', 'persistent' => false, 'encoding' => 'utf8',]]];" > ./src/config/app_local.php
 
-#                mysql -uroot -proot -e 'CREATE DATABASE IF NOT EXISTS test_myapp'
-#            - name: Setup config
-#              run: |
-#                echo "<?php return ['Datasources' => ['test' => ['username' => 'root', 'password' => 'root', 'port' => '${{ job.services.mysql.ports['3306'] }}', 'database' => 'test_myapp', 'persistent' => false, 'encoding' => 'utf8',]]];" > ./src/config/app_local.php
+            - name: Install dependencies
+              run: |
+                cd ./src
+                composer install
 #
-#            - name: Install dependencies
-#              run: |
-#                cd ./src
-#                composer install
-#
-#            - name: CodeSniffer
-#              run: |
-#                cd ./src
-#                ./vendor/bin/phpcs -p
+            - name: CodeSniffer
+              run: |
+                cd ./src
+                composer cs-check
 #
 #            - name: Psalm
 #              run: |
@@ -94,7 +63,7 @@ jobs:
 #                cd ./src
 #                bin/cake migrations migrate -c test
 #
-#            - name: PHPUnit
-#              run: |
-#                cd ./src
-#                ./vendor/bin/phpunit -v
+            - name: PHPUnit
+              run: |
+                cd ./src
+                composer test
