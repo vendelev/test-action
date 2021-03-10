@@ -44,14 +44,10 @@ jobs:
                 echo "<?php return ['Datasources' => ['test' => ['username' => 'root', 'password' => 'root', 'host' => '127.0.0.1', 'port' => '${{ job.services.mysql.ports['3306'] }}', 'database' => 'test_myapp', 'persistent' => false, 'encoding' => 'utf8',]]];" > ./config/app_local.php
 
             - name: Install dependencies
-              run: |
-                cd ./src
-                composer install
+              run: composer install
 #
             - name: CodeSniffer
-              run: |
-                cd ./src
-                composer cs-check
+              run: composer cs-check
 #
 #            - name: Psalm
 #              run: |
@@ -64,6 +60,4 @@ jobs:
 #                bin/cake migrations migrate -c test
 #
             - name: PHPUnit
-              run: |
-                cd ./src
-                composer test
+              run: composer test
